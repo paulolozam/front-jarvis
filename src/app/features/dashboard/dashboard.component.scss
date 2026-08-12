@@ -1,0 +1,52 @@
+.dashboard {
+  .page-title {
+    font-size: 1.25rem;
+    font-weight: 500;
+    margin: 0 0 1.5rem;
+    color: rgba(0, 0, 0, 0.87);
+  }
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.metric-card {
+  .metric-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .metric-label {
+    font-size: 0.8rem;
+    color: rgba(0, 0, 0, 0.54);
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
+  .metric-value {
+    font-size: 1.75rem;
+    font-weight: 500;
+  }
+
+  .metric-icon {
+    font-size: 2.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    opacity: 0.2;
+
+    &.danger  { color: #f44336; opacity: 0.6; }
+    &.success { color: #4caf50; opacity: 0.6; }
+    &.primary { color: #3f51b5; opacity: 0.6; }
+  }
+}
+
+.table-card {
+  .full-width {
+    width: 100%;
+  }
+}

@@ -51,7 +51,7 @@ export class UsuarioDialogComponent implements OnInit {
       username:   [data.user?.username   ?? '', Validators.required],
       email:      [data.user?.email      ?? '', [Validators.required, Validators.email]],
       is_active:  [data.user?.is_active  ?? true],
-      roles:      [data.user?.roles?.map(r => r.id) ?? []]
+      roles:      [data.user?.roles?.map(r => r.role) ?? []]
     });
 
     // password solo requerido al crear
@@ -65,7 +65,7 @@ export class UsuarioDialogComponent implements OnInit {
   }
 
   cargarRoles() {
-    this.service.getRoles(0).subscribe(roles => this.roles = roles);
+    this.service.getCatalogRoles().subscribe(page => this.roles = page.results);
   }
 
   onSubmit() {

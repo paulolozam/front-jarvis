@@ -47,7 +47,7 @@ export class UsuariosComponent implements OnInit {
     this.loading.set(true);
     this.service.getAll().subscribe({
       next: (data) => {
-        this.usuarios.set(data);
+        this.usuarios.set(data.results);
         this.loading.set(false);
       },
       error: () => {

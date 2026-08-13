@@ -2,7 +2,8 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { ApiService } from '../../core/services/api.service';
-import { User, Role, RegisterUser, ChangePassword } from '../../core/models/user.model';
+import { User, Role, UserRole, RegisterUser, ChangePassword } from '../../core/models/user.model';
+import { Paginated } from '../../core/models/pagination.model';
 
 const MOCK_USUARIOS: User[] = [
   {
@@ -12,7 +13,7 @@ const MOCK_USUARIOS: User[] = [
     first_name: 'Juan',
     last_name: 'García',
     is_active: true,
-    roles: [{ id: 1, name: 'Admin' }]
+    roles: [{ id: 1, user: 1, role: 1, role_name: 'Admin', area: 1, area_name: 'Planta', created_at: '' }]
   },
   {
     id: 2,
@@ -21,7 +22,7 @@ const MOCK_USUARIOS: User[] = [
     first_name: 'María',
     last_name: 'López',
     is_active: true,
-    roles: [{ id: 2, name: 'Operador' }]
+    roles: [{ id: 2, user: 2, role: 2, role_name: 'Operador', area: 2, area_name: 'Linea de Ensamble', created_at: '' }]
   },
   {
     id: 3,
@@ -34,6 +35,13 @@ const MOCK_USUARIOS: User[] = [
   }
 ];
 
+const MOCK_PAGE: Paginated<User> = {
+  count: MOCK_USUARIOS.length,
+  next: null,
+  previous: null,
+  results: MOCK_USUARIOS
+};
+
 @Injectable({ providedIn: 'root' })
 export class UsuariosService {
   private path = 'rbac/users';
@@ -41,9 +49,9 @@ export class UsuariosService {
 
   constructor(private api: ApiService) {}
 
-  getAll(): Observable<User[]> {
-    if (this.useMock) return of(MOCK_USUARIOS);
-    return this.api.get<User[]>(`${this.path}/users_list/`);
+  getAll(): Observable<Paginated<User>> {
+    if (this.useMock) return of(MOCK_PAGE);
+    return this.api.get<Paginated<User>>(`${this.path}/users-list/`);
   }
 
   getMe(): Observable<User> {
@@ -61,26 +69,41 @@ export class UsuariosService {
       const user = MOCK_USUARIOS.find(u => u.id === id)!;
       return of({ ...user, ...data });
     }
-    return this.api.put<User>(`${this.path}/${id}/user_update/`, data);
+    return this.api.put<User>(`${this.path}/${id}/user-update/`, data);
   }
 
-  getRoles(id: number): Observable<Role[]> {
-    if (this.useMock) return of([{ id: 1, name: 'Admin' }, { id: 2, name: 'Operador' }]);
-    return this.api.get<Role[]>(`${this.path}/${id}/roles/`);
+  getCatalogRoles(): Observable<Paginated<Role>> {
+    if (this.useMock) {
+      return of({
+        count: 2,
+        next: null,
+        previous: null,
+        results: [
+          { id: 1, code: 'ADMIN', name: 'Admin', description: '', created_at: '' },
+          { id: 2, code: 'OPERATOR', name: 'Operador', description: '', created_at: '' }
+        ]
+      });
+    }
+    return this.api.get<Paginated<Role>>('rbac/roles/');
   }
 
-  assignRole(id: number, roleId: number): Observable<any> {
+  getRoles(id: number): Observable<UserRole[]> {
+    if (this.useMock) return of(MOCK_USUARIOS.find(u => u.id === id)?.roles ?? []);
+    return this.api.get<UserRole[]>(`${this.path}/${id}/roles/`);
+  }
+
+  assignRole(id: number, roleId: number, areaId: number): Observable<any> {
     if (this.useMock) return of({ success: true });
-    return this.api.post(`${this.path}/${id}/assign_role/`, { role_id: roleId });
+    return this.api.post(`${this.path}/${id}/assign-role/`, { role: roleId, area: areaId });
   }
 
   removeRole(id: number, roleId: number): Observable<any> {
     if (this.useMock) return of({ success: true });
-    return this.api.post(`${this.path}/${id}/remove_role/`, { role_id: roleId });
+    return this.api.delete(`${this.path}/${id}/remove-role/`, { role: roleId });
   }
 
   changePassword(id: number, data: ChangePassword): Observable<any> {
     if (this.useMock) return of({ success: true });
-    return this.api.post(`${this.path}/${id}/change_password/`, data);
+    return this.api.post(`${this.path}/${id}/change-password/`, data);
   }
 }

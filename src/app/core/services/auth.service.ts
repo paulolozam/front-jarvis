@@ -19,8 +19,13 @@ export class AuthService {
   isAuthenticated = computed(() => !!this._token());
 
   constructor(private http: HttpClient, private router: Router) {}
+
+  getAccessToken(): string | null {
+    return this._token();
+  }
+
 login(username: string, password: string) {
-  return this.http.post<TokenResponse>(`${this.base}/token/`, { username, password })
+  return this.http.post<TokenResponse>(`${this.base}/rbac/users/login/`, { username, password })
     .pipe(
       tap(res => {
         localStorage.setItem('access_token', res.access);

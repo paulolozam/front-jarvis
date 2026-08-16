@@ -45,3 +45,73 @@
     color: #c62828;
   }
 }
+
+
+
+.usuarios {
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .full-width {
+    width: 100%;
+  }
+
+  // --- Filas compactas: reduce el alto para que quepan ~15 registros ---
+  .table-compact {
+    .mat-mdc-header-row {
+      height: 40px;
+    }
+
+    .mat-mdc-row {
+      height: 40px;
+    }
+
+    .mat-mdc-header-cell,
+    .mat-mdc-cell {
+      padding: 4px 8px;
+      font-size: 13px;
+    }
+
+    .username {
+      display: block;
+      font-size: 11px;
+      color: rgba(0, 0, 0, 0.54);
+    }
+
+    mat-chip-set {
+      // chips más chicos dentro de la celda de roles
+      .mat-mdc-chip {
+        min-height: 22px;
+        font-size: 11px;
+        padding: 0 8px;
+      }
+    }
+
+    .badge {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 10px;
+
+      &.active {
+        background: #e6f4ea;
+        color: #1e7e34;
+      }
+
+      &.inactive {
+        background: #fbe9e7;
+        color: #c62828;
+      }
+    }
+  }
+
+  .loading-container {
+    display: flex;
+    justify-content: center;
+    padding: 40px 0;
+  }
+}
+

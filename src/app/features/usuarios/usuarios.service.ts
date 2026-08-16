@@ -49,11 +49,13 @@ export class UsuariosService {
 
   constructor(private api: ApiService) {}
 
-  getAll(): Observable<Paginated<User>> {
-    if (this.useMock) return of(MOCK_PAGE);
-    return this.api.get<Paginated<User>>(`${this.path}/users-list/`);
-  }
 
+  getAll(page: number = 1, pageSize: number = 15): Observable<Paginated<User>> {
+    if (this.useMock) return of(MOCK_PAGE);
+    return this.api.get<Paginated<User>>(
+      `${this.path}/users-list/?page=${page}&page_size=${pageSize}`
+    );
+  }
   getMe(): Observable<User> {
     if (this.useMock) return of(MOCK_USUARIOS[0]);
     return this.api.get<User>(`${this.path}/me/`);

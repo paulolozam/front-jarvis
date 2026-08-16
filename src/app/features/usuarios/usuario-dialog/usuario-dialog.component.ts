@@ -1,25 +1,35 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatSelectModule } from '@angular/material/select';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { UsuariosService } from '../usuarios.service';
-import { User, Role } from '../../../core/models/user.model';
+import { Component, Inject, OnInit } from "@angular/core";
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+  AbstractControl,
+} from "@angular/forms";
+import {
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+  MatDialogModule,
+} from "@angular/material/dialog";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatInputModule } from "@angular/material/input";
+import { MatButtonModule } from "@angular/material/button";
+import { MatSelectModule } from "@angular/material/select";
+import { MatSlideToggleModule } from "@angular/material/slide-toggle";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { UsuariosService } from "../usuarios.service";
+import { User, Role } from "../../../core/models/user.model";
 
 export interface DialogData {
   user?: User;
-  mode: 'crear' | 'editar';
+  mode: "crear" | "editar";
 }
 
 @Component({
-  selector: 'app-usuario-dialog',
+  selector: "app-usuario-dialog",
   standalone: true,
-  templateUrl: './usuario-dialog.component.html',
-  styleUrl: './usuario-dialog.component.scss',
+  templateUrl: "./usuario-dialog.component.html",
+  styleUrl: "./usuario-dialog.component.scss",
   imports: [
     ReactiveFormsModule,
     MatDialogModule,
@@ -28,8 +38,8 @@ export interface DialogData {
     MatButtonModule,
     MatSelectModule,
     MatSlideToggleModule,
-    MatProgressSpinnerModule
-  ]
+    MatProgressSpinnerModule,
+  ],
 })
 export class UsuarioDialogComponent implements OnInit {
   form: FormGroup;
@@ -41,22 +51,31 @@ export class UsuarioDialogComponent implements OnInit {
     private fb: FormBuilder,
     private service: UsuariosService,
     public dialogRef: MatDialogRef<UsuarioDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: DialogData
+    @Inject(MAT_DIALOG_DATA) public data: DialogData,
   ) {
-    this.isEditar = data.mode === 'editar';
+    this.isEditar = data.mode === "editar";
 
     this.form = this.fb.group({
-      first_name: [data.user?.first_name ?? '', Validators.required],
-      last_name:  [data.user?.last_name  ?? '', Validators.required],
-      username:   [data.user?.username   ?? '', Validators.required],
-      email:      [data.user?.email      ?? '', [Validators.required, Validators.email]],
-      is_active:  [data.user?.is_active  ?? true],
-      roles:      [data.user?.roles?.map(r => r.role) ?? []]
+      first_name: [data.user?.first_name ?? "", Validators.required],
+      last_name: [data.user?.last_name ?? "", Validators.required],
+      username: [data.user?.username ?? "", Validators.required],
+      email: [data.user?.email ?? "", [Validators.required, Validators.email]],
+      is_active: [data.user?.is_active ?? true],
+      roles: [data.user?.roles?.map((r) => r.role) ?? []],
     });
 
     // password solo requerido al crear
     if (!this.isEditar) {
-      this.form.addControl('password', this.fb.control('', [Validators.required, Validators.minLength(6)]));
+      this.form.addControl(
+        "password",
+        this.fb.control("", [Validators.required, Validators.minLength(6)]),
+      );
+      this.form.addControl(
+        "password2",
+        this.fb.control("", [Validators.required, Validators.minLength(6)]),
+      );
+
+      this.form.addValidators(this.passwordsMatchValidator);
     }
   }
 
@@ -65,7 +84,9 @@ export class UsuarioDialogComponent implements OnInit {
   }
 
   cargarRoles() {
-    this.service.getCatalogRoles().subscribe(page => this.roles = page.results);
+    this.service
+      .getCatalogRoles()
+      .subscribe((page) => (this.roles = page.results));
   }
 
   onSubmit() {
@@ -77,12 +98,16 @@ export class UsuarioDialogComponent implements OnInit {
     if (this.isEditar) {
       this.service.update(this.data.user!.id, value).subscribe({
         next: (updated) => this.dialogRef.close(updated),
-        error: () => this.loading = false
+        error: () => (this.loading = false),
       });
     } else {
       this.service.register(value).subscribe({
-        next: (created) => this.dialogRef.close(created),
-        error: () => this.loading = false
+        next: (created) => {
+          this.limpiarFormulario();
+          this.loading = false;
+          this.dialogRef.close(created);
+        },
+        error: () => (this.loading = false),
       });
     }
   }
@@ -91,6 +116,23 @@ export class UsuarioDialogComponent implements OnInit {
     this.dialogRef.close();
   }
 
+  private passwordsMatchValidator(control: AbstractControl) {
+    const password = control.get("password")?.value;
+    const password2 = control.get("password2")?.value;
 
+    if (password && password2 && password !== password2) {
+      return { passwordsMismatch: true };
+    }
 
+    return null;
+  }
+
+  limpiarFormulario() {
+    this.form.reset();
+
+    this.form.patchValue({
+      is_active: true,
+      roles: [],
+    });
+  }
 }

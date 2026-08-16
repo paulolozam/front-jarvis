@@ -18,7 +18,7 @@
       }
 
       @if (!loading()) {
-        <table mat-table [dataSource]="usuarios()" class="full-width">
+        <table mat-table [dataSource]="usuarios()" class="full-width table-compact">
 
           <ng-container matColumnDef="nombre">
             <th mat-header-cell *matHeaderCellDef>Nombre</th>
@@ -66,6 +66,15 @@
           <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 
         </table>
+
+        <mat-paginator
+          [length]="totalCount()"
+          [pageIndex]="pageIndex()"
+          [pageSize]="pageSize()"
+          [pageSizeOptions]="pageSizeOptions"
+          showFirstLastButtons
+          (page)="onPageChange($event)">
+        </mat-paginator>
       }
 
     </mat-card-content>

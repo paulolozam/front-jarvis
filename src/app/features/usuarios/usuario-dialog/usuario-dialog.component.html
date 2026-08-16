@@ -8,7 +8,7 @@
         <mat-label>Nombre</mat-label>
         <input matInput formControlName="first_name" />
         @if (form.get('first_name')?.hasError('required')) {
-          <mat-error>Campo requerido</mat-error>
+        <mat-error>Campo requerido</mat-error>
         }
       </mat-form-field>
 
@@ -16,7 +16,7 @@
         <mat-label>Apellido</mat-label>
         <input matInput formControlName="last_name" />
         @if (form.get('last_name')?.hasError('required')) {
-          <mat-error>Campo requerido</mat-error>
+        <mat-error>Campo requerido</mat-error>
         }
       </mat-form-field>
     </div>
@@ -25,7 +25,7 @@
       <mat-label>Usuario</mat-label>
       <input matInput formControlName="username" />
       @if (form.get('username')?.hasError('required')) {
-        <mat-error>Campo requerido</mat-error>
+      <mat-error>Campo requerido</mat-error>
       }
     </mat-form-field>
 
@@ -33,39 +33,57 @@
       <mat-label>Email</mat-label>
       <input matInput formControlName="email" type="email" />
       @if (form.get('email')?.hasError('required')) {
-        <mat-error>Campo requerido</mat-error>
+      <mat-error>Campo requerido</mat-error>
       }
       @if (form.get('email')?.hasError('email')) {
-        <mat-error>Email inválido</mat-error>
+      <mat-error>Email inválido</mat-error>
       }
     </mat-form-field>
 
     @if (!isEditar) {
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Contraseña</mat-label>
-        <input matInput formControlName="password" type="password" />
-        @if (form.get('password')?.hasError('required')) {
-          <mat-error>Campo requerido</mat-error>
-        }
-        @if (form.get('password')?.hasError('minlength')) {
-          <mat-error>Mínimo 6 caracteres</mat-error>
-        }
-      </mat-form-field>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Contraseña</mat-label>
+      <input matInput formControlName="password" type="password" />
+      @if (form.get('password')?.hasError('required')) {
+      <mat-error>Campo requerido</mat-error>
+      }
+      @if (form.get('password')?.hasError('minlength')) {
+      <mat-error>Mínimo 6 caracteres</mat-error>
+      }
+    </mat-form-field>
+    }
+
+    @if (!isEditar) {
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Confirmar Contraseña</mat-label>
+      <input matInput formControlName="password2" type="password" />
+      @if (form.get('password2')?.hasError('required')) {
+      <mat-error>Campo requerido</mat-error>
+      }
+      @if (form.get('password2')?.hasError('minlength')) {
+      <mat-error>Mínimo 6 caracteres</mat-error>
+      }
+      @if (form.hasError('passwordsMismatch') && form.get('password2')?.touched) {
+      <mat-error>
+        Las contraseñas no coinciden
+      </mat-error>
+      }
+    </mat-form-field>
     }
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Roles</mat-label>
       <mat-select formControlName="roles" multiple>
         @for (role of roles; track role.id) {
-          <mat-option [value]="role.id">{{ role.name }}</mat-option>
+        <mat-option [value]="role.id">{{ role.name }}</mat-option>
         }
       </mat-select>
     </mat-form-field>
 
     @if (isEditar) {
-      <mat-slide-toggle formControlName="is_active">
-        Usuario activo
-      </mat-slide-toggle>
+    <mat-slide-toggle formControlName="is_active">
+      Usuario activo
+    </mat-slide-toggle>
     }
 
   </form>
@@ -73,13 +91,11 @@
 
 <mat-dialog-actions align="end">
   <button mat-button (click)="onCancel()">Cancelar</button>
-  <button mat-flat-button color="primary"
-    [disabled]="form.invalid || loading"
-    (click)="onSubmit()">
+  <button mat-flat-button color="primary" [disabled]="form.invalid || loading" (click)="onSubmit()">
     @if (loading) {
-      <mat-spinner diameter="20" />
+    <mat-spinner diameter="20" />
     } @else {
-      {{ isEditar ? 'Guardar' : 'Crear' }}
+    {{ isEditar ? 'Guardar' : 'Crear' }}
     }
   </button>
 </mat-dialog-actions>
